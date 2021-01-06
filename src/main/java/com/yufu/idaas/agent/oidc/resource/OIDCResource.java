@@ -4,10 +4,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jwt.SignedJWT;
 import com.yufu.idaas.agent.oidc.configuration.OIDCConfiguration;
 import com.yufu.idaas.agent.oidc.configuration.YufuConfiguration;
+import com.yufu.idaas.agent.oidc.utils.JWKUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -75,9 +75,7 @@ public class OIDCResource {
 
             SignedJWT jwt = SignedJWT.parse(idToken);
             Preconditions.checkArgument(jwt.getJWTClaimsSet().getExpirationTime().after(new Date()));
-            RSASSAVerifier verifier = new RSASSAVerifier(oidcConfiguration.getPublicKey());
-            boolean verifyResult = jwt.verify(verifier);
-            Preconditions.checkArgument(verifyResult);
+            Preconditions.checkArgument(JWKUtils.verify(jwt, oidcConfiguration.getPublicKeys()));
 
             String accessToken = String.valueOf(token.get("access_token"));
             Map<String, Object> userInfo = client.target(oidcConfiguration.getUserinfo_endpoint())
@@ -157,9 +155,7 @@ public class OIDCResource {
         Preconditions.checkNotNull(jwt.getJWTClaimsSet().getIssuer(), "empty issuer");
         Preconditions.checkNotNull(jwt.getJWTClaimsSet().getAudience(), "empty audience");
 
-        RSASSAVerifier verifier = new RSASSAVerifier(oidcConfiguration.getPublicKey());
-        boolean verifyResult = jwt.verify(verifier);
-        Preconditions.checkArgument(verifyResult);
+        Preconditions.checkArgument(JWKUtils.verify(jwt, oidcConfiguration.getPublicKeys()));
         Preconditions.checkArgument(jwt.getJWTClaimsSet().getSubject() != null, "empty subject");
 
         String accessToken = String.valueOf(token.get("access_token"));

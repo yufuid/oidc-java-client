@@ -2,7 +2,9 @@ package com.yufu.idaas.agent.oidc.utils;
 
 import com.google.common.base.Preconditions;
 import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jwt.SignedJWT;
 import com.yufu.idaas.agent.oidc.configuration.OIDCConfiguration;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -12,9 +14,22 @@ import net.minidev.json.parser.ParseException;
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.net.URL;
+import java.security.interfaces.RSAPublicKey;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class JWKUtils {
+
+    public static boolean verify(SignedJWT jwt, Map<String, RSAPublicKey> publicKeys) throws JOSEException {
+        String kid = jwt.getHeader().getKeyID();
+        RSAPublicKey rsaPublicKey = publicKeys.get(kid);
+        if (rsaPublicKey == null) {
+            return false;
+        }
+        RSASSAVerifier verifier = new RSASSAVerifier(rsaPublicKey);
+        return jwt.verify(verifier);
+    }
 
     public static OIDCConfiguration getProviderRSAJWK(URL wellKnownUrl) throws
         IllegalArgumentException,
@@ -33,13 +48,15 @@ public class JWKUtils {
         JSONObject jwtObject = getObjectFromUrl(UriBuilder.fromUri(json.get("jwks_uri").toString()).build().toURL());
 
         // Find the RSA signing key
+        Map<String, RSAPublicKey> rsaPublicKeyMap = new HashMap<>();
         JSONArray keyList = (JSONArray) jwtObject.get("keys");
         for (Object key : keyList) {
             JSONObject k = (JSONObject) key;
             if (k.get("use").equals("sig") && k.get("kty").equals("RSA")) {
-                configurationBuilder.publicKey(RSAKey.parse(k).toRSAPublicKey());
+                rsaPublicKeyMap.put(k.get("kid").toString(), RSAKey.parse(k).toRSAPublicKey());
             }
         }
+        configurationBuilder.publicKeys(rsaPublicKeyMap);
         return configurationBuilder.build();
     }
 
