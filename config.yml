@@ -1,13 +1,10 @@
 #type: pkce
 #clientId: ai-d95abcf3bb8a47acad3faf517927d150
 
-type: oidc
-
-clientId: ai-32b9f49840fa49c0a7da55f554624baf
-clientSecret: OkZ8mfc1Ojd6ua6e13YaweEq
-wellKnownUrl: https://demo-idp.cig.tencentcs.com/sso/tn-27ed1e2c13d44745a6f850c7a2196bd5/ai-32b9f49840fa49c0a7da55f554624baf/oidc/.well-known/openid-configuration
-
-redirectUrl: http://127.0.0.1:7070/callback
+type: core
+clientId: ai-2323fa20cb0640ae89b837b0ac9d3701
+clientSecret: XV2wyuYYbkoUtdD7AgQb3z6e
+wellKnownUrl: https://demo-idp.cig.tencentcs.com/sso/tn-27ed1e2c13d44745a6f850c7a2196bd5/ai-2323fa20cb0640ae89b837b0ac9d3701/oidc/.well-known/openid-configuration
 
 server:
   #  softNofileLimit: 1000

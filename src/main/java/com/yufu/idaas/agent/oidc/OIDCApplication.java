@@ -1,20 +1,25 @@
 package com.yufu.idaas.agent.oidc;
 
-import com.yufu.idaas.agent.oidc.configuration.OIDCConfiguration;
-import com.yufu.idaas.agent.oidc.configuration.YufuConfiguration;
-import com.yufu.idaas.agent.oidc.resource.OIDCResource;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yufu.idaas.agent.oidc.domain.OIDCConfig;
+import com.yufu.idaas.agent.oidc.resource.CenterResource;
+import com.yufu.idaas.agent.oidc.resource.CoreResource;
+import com.yufu.idaas.agent.oidc.resource.PwdResource;
+import com.yufu.idaas.agent.oidc.resource.SPAResource;
 import com.yufu.idaas.agent.oidc.utils.JWKUtils;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Environment;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.UriBuilder;
 
 /**
  * Created by yunzhang on 6/29/16.
  */
 @Slf4j
-public class OIDCApplication extends Application<YufuConfiguration> {
+public class OIDCApplication extends Application<ClientConfiguration> {
     /**
      * The service's entry point. This service runs as a simple Java application.
      *
@@ -26,17 +31,25 @@ public class OIDCApplication extends Application<YufuConfiguration> {
 
     @Override
     public void run(
-        YufuConfiguration configuration,
+        ClientConfiguration configuration,
         Environment environment
     ) throws Exception {
-        OIDCConfiguration
-            oidcConfiguration =
-            JWKUtils.getProviderRSAJWK(UriBuilder.fromUri(configuration.getWellKnownUrl())
-                .build()
-                .toURL()
+        OIDCConfig
+            oidcConfig =
+            JWKUtils.genConfig(
+                configuration.getClientId(),
+                configuration.getClientSecret(),
+                UriBuilder.fromUri(configuration.getWellKnownUrl())
+                    .build()
+                    .toURL()
             );
+        Client client = ClientBuilder.newClient();
+        ObjectMapper objectMapper = new ObjectMapper();
 
-        environment.jersey().register(new OIDCResource(configuration, oidcConfiguration));
+        environment.jersey().register(new SPAResource(oidcConfig, client, objectMapper));
+        environment.jersey().register(new PwdResource(oidcConfig, client, objectMapper));
+        environment.jersey().register(new CoreResource(oidcConfig, client, objectMapper));
+        environment.jersey().register(new CenterResource(objectMapper, configuration.getType()));
     }
 
 }

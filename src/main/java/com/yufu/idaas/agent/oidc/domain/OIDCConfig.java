@@ -1,4 +1,4 @@
-package com.yufu.idaas.agent.oidc.configuration;
+package com.yufu.idaas.agent.oidc.domain;
 
 import lombok.Builder;
 import lombok.Data;
@@ -14,12 +14,14 @@ import java.util.Map;
 @Slf4j
 @Data
 @Builder
-public class OIDCConfiguration {
+public class OIDCConfig {
     private String issuer;
     private String authorization_endpoint;
     private String token_endpoint;
-    private String jwks_uri;
     private String userinfo_endpoint;
 
     private Map<String, RSAPublicKey> publicKeys;
+
+    private String clientId;
+    private String clientSecret;
 }

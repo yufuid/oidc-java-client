@@ -5,7 +5,7 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.SignedJWT;
-import com.yufu.idaas.agent.oidc.configuration.OIDCConfiguration;
+import com.yufu.idaas.agent.oidc.domain.OIDCConfig;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -31,18 +31,21 @@ public class JWKUtils {
         return jwt.verify(verifier);
     }
 
-    public static OIDCConfiguration getProviderRSAJWK(URL wellKnownUrl) throws
+    public static OIDCConfig genConfig(String clientId, String clientSecret, URL wellKnownUrl) throws
         IllegalArgumentException,
         IOException,
         ParseException, java.text.ParseException, JOSEException {
 
-        OIDCConfiguration.OIDCConfigurationBuilder configurationBuilder = OIDCConfiguration.builder();
+        OIDCConfig.OIDCConfigBuilder configurationBuilder = OIDCConfig.builder();
 
         JSONObject json = getObjectFromUrl(wellKnownUrl);
+
+        configurationBuilder.clientId(clientId);
+        configurationBuilder.clientSecret(clientSecret);
+
         configurationBuilder.issuer(json.get("issuer").toString());
         configurationBuilder.authorization_endpoint(json.get("authorization_endpoint").toString());
         configurationBuilder.token_endpoint(json.get("token_endpoint").toString());
-        configurationBuilder.jwks_uri(json.get("jwks_uri").toString());
         configurationBuilder.userinfo_endpoint(json.get("userinfo_endpoint").toString());
 
         JSONObject jwtObject = getObjectFromUrl(UriBuilder.fromUri(json.get("jwks_uri").toString()).build().toURL());
