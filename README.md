@@ -15,3 +15,6 @@ This will build all modules and run the testsuite.
 To start client run:
 
     java -jar target/oidc-java-client-1.0.jar server config.yml
+
+click http://127.0.0.1:7070, test account demo/demo123
+ 

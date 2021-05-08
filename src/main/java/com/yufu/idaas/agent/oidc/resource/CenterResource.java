@@ -47,7 +47,7 @@ public class CenterResource {
                 loginUri = "/core";
                 break;
             case pkce:
-                loginUri = "/spa";
+                loginUri = "/pkce";
                 break;
             case password:
                 loginUri = "/pwd";

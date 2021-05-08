@@ -11,4 +11,6 @@ public class ClientConfiguration extends Configuration {
     private String clientSecret;
 
     private String wellKnownUrl;
+
+    private String baseUrl;
 }

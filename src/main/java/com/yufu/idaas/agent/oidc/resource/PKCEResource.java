@@ -7,7 +7,9 @@ import com.yufu.idaas.agent.oidc.utils.TokenUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.*;
@@ -23,25 +25,27 @@ import static com.yufu.idaas.agent.oidc.utils.EncodeUtils.urlEncodeSHA256;
  * User: yunzhang
  * Date: 2019/5/15,3:53 PM
  * <p>
- * SINGLE PAGE APPLICATION
+ * Proof Key for Code Exchange
  */
 
-@Path("/spa")
-public class SPAResource {
+@Path("/pkce")
+public class PKCEResource {
     private final OIDCConfig oidcConfig;
     private final Client client;
     private final ObjectMapper objectMapper;
     private final String STATE = UUID.randomUUID().toString();
 
     private final String codeVerifier = UUID.randomUUID().toString().replace("-", "");
-    private final String redirect_uri = "http://127.0.0.1:7070/spa/callback";
+    private final String redirect_uri;
 
-    public SPAResource(
+    public PKCEResource(
         OIDCConfig oidcConfig,
+        String baseUrl,
         Client client,
         ObjectMapper objectMapper
     ) {
         this.oidcConfig = oidcConfig;
+        this.redirect_uri = baseUrl + "/pkce/callback";
         this.client = client;
         this.objectMapper = objectMapper;
     }

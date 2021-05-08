@@ -28,14 +28,16 @@ public class CoreResource {
     private final Client client;
     private final ObjectMapper objectMapper;
     private final String STATE = UUID.randomUUID().toString();
-    private final String redirect_uri = "http://127.0.0.1:7070/core/callback";
+    private final String redirect_uri;
 
     public CoreResource(
         OIDCConfig oidcConfig,
+        String baseUrl,
         Client client,
         ObjectMapper objectMapper
     ) {
         this.oidcConfig = oidcConfig;
+        this.redirect_uri = baseUrl + "/core/callback";
         this.client = client;
         this.objectMapper = objectMapper;
     }

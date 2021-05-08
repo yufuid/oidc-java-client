@@ -5,6 +5,7 @@ type: core
 clientId: ai-2323fa20cb0640ae89b837b0ac9d3701
 clientSecret: XV2wyuYYbkoUtdD7AgQb3z6e
 wellKnownUrl: https://demo-idp.cig.tencentcs.com/sso/tn-27ed1e2c13d44745a6f850c7a2196bd5/ai-2323fa20cb0640ae89b837b0ac9d3701/oidc/.well-known/openid-configuration
+baseUrl: http://127.0.0.1:7070
 
 server:
   #  softNofileLimit: 1000

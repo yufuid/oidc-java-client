@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yufu.idaas.agent.oidc.domain.OIDCConfig;
 import com.yufu.idaas.agent.oidc.resource.CenterResource;
 import com.yufu.idaas.agent.oidc.resource.CoreResource;
+import com.yufu.idaas.agent.oidc.resource.PKCEResource;
 import com.yufu.idaas.agent.oidc.resource.PwdResource;
-import com.yufu.idaas.agent.oidc.resource.SPAResource;
 import com.yufu.idaas.agent.oidc.utils.JWKUtils;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Environment;
@@ -46,9 +46,9 @@ public class OIDCApplication extends Application<ClientConfiguration> {
         Client client = ClientBuilder.newClient();
         ObjectMapper objectMapper = new ObjectMapper();
 
-        environment.jersey().register(new SPAResource(oidcConfig, client, objectMapper));
+        environment.jersey().register(new PKCEResource(oidcConfig, configuration.getBaseUrl(), client, objectMapper));
         environment.jersey().register(new PwdResource(oidcConfig, client, objectMapper));
-        environment.jersey().register(new CoreResource(oidcConfig, client, objectMapper));
+        environment.jersey().register(new CoreResource(oidcConfig, configuration.getBaseUrl(), client, objectMapper));
         environment.jersey().register(new CenterResource(objectMapper, configuration.getType()));
     }
 
